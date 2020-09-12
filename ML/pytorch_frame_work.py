@@ -1,7 +1,6 @@
 """
-Frame work for build a DCNN using Pytorch
+Frame work for building a DCNN using Pytorch
 """
-
 
 import torch
 import torch.nn as nn
@@ -10,7 +9,7 @@ import torch.optim as optim
 
 # ===================================================================================
 """
-Step1: Define a CNN 
+Define a CNN 
 """
 class Net(nn.Module):
 
@@ -60,10 +59,13 @@ class Net(nn.Module):
 # Create DCNN object
 net = Net()
 
+
+
+# ===================================================================================
 """
 Training loops
 """
-# ===================================================================================
+
 # Pass in input and get output
 output = net(input)
 
@@ -90,3 +92,33 @@ optimizer = optim.SGD(net.parameters(), lr=0.01)
 optimizer.zero_grad()   # zero the gradient buffers
 loss.backward()
 optimizer.step()    # Does the update
+
+# =====================================================================================
+"""
+Save and Load Model
+"""
+# Save
+PATH = './cifar_net.pth'
+torch.save(net.state_dict(), PATH)
+
+# Load
+net = Net()
+net.load_state_dict(torch.load(PATH))
+
+
+
+# =====================================================================================
+"""
+Training with GPU
+"""
+# 1
+# Define a device
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+# 2
+# convert parameters to CUDA tensor
+net.to(device)
+
+# 3
+# send input and target to CUDA as well
+inputs, labels = data[0].to(device), data[1].to(device)
